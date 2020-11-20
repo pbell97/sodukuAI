@@ -106,4 +106,4 @@ class DigitClassifierNN:
         predictions = self.model.predict(img_array)
         score = tf.nn.softmax(predictions[0])
         prediction = self.class_names[np.argmax(score)]
-        return prediction, np.max(score)
+        return prediction

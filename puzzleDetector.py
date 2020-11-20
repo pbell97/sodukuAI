@@ -15,6 +15,7 @@ from tensorflow.keras.models import Sequential
 import pathlib
 from digitClassifier import DigitClassifierNN
 import copy
+from puzzleSolver import PuzzleSolver
 
 
 class Puzzle:
@@ -24,7 +25,7 @@ class Puzzle:
         self.blackLower = (0, 0, 0)
         self.blackUpper = (200, 200, 200)
         self.gridCorners = ((), (), (), ())
-        self.coppedImageWithGrid = None
+        self.croppedImageWithGrid = None
         self.cells = None
         self.numberedCells = None
 
@@ -45,7 +46,7 @@ class Puzzle:
                 self.blackUpper = (
                     color[0]+color[0]*threshhold, color[1]+color[1]*threshhold, color[2]+color[2]*threshhold)
                 break
-
+        print(self.blackLower, self.blackUpper)
         # TODO: Debug lower & upper values here
 
     # Assigns the grid's corners and crops to just grid
@@ -70,8 +71,8 @@ class Puzzle:
         bottomRightCornerY = box[3][1]
         self.gridCorners = (topLeftCornerX, topLeftCornerY,
                             bottomRightCornerX, bottomRightCornerY)
-        self.coppedImageWithGrid = self.originalImage[topLeftCornerY:
-                                                      bottomRightCornerY, topLeftCornerX:bottomRightCornerX]
+        self.croppedImageWithGrid = self.originalImage[topLeftCornerY:
+                                                       bottomRightCornerY, topLeftCornerX:bottomRightCornerX]
 
         # TODO: Debug show corners and copped image
 
@@ -86,13 +87,13 @@ class Puzzle:
         ]
 
         # Creates list of subgrids
-        height, width, colorChannels = self.coppedImageWithGrid.shape
+        height, width, colorChannels = self.croppedImageWithGrid.shape
         xInc = int(height/3)
         yInc = int(width/3)
         for i in range(3):
             for j in range(3):
-                subGrids[i][j] = self.coppedImageWithGrid[yInc *
-                                                          i:yInc*i+yInc, xInc*j:xInc*j+xInc]
+                subGrids[i][j] = self.croppedImageWithGrid[yInc *
+                                                           i:yInc*i+yInc, xInc*j:xInc*j+xInc]
 
         # All the cells, in a subgrid organication
         cells = []
@@ -163,8 +164,16 @@ if __name__ == "__main__":
 
     digitsNN = DigitClassifierNN()
     digitsNN.loadModel(
-        '/Users/patrickbell/Documents/sodukuAI/digitClassifier/wholeModelSave')
+        '/Users/patrickbell/Documents/sodukuAI/digitClassifier/wholeModelSaveWith7Epochs')
 
-    print(digitsNN.predict(puzzle.cells[0][0][2][0]))
-    puzzle.detectNumbers(digitsNN)
-    print(puzzle.numberedCells[0][0][2][0])
+    puzzle.showCroppedGrid()
+    # print(digitsNN.predict(puzzle.cells[0][0][2][0]))
+    # puzzle.detectNumbers(digitsNN)
+    # print(puzzle.numberedCells[1][0][1][2])
+    # puzzle.showCell(1, 0, 1, 2)
+
+    # ps = PuzzleSolver()
+    # newPuzzle = ps.convertSubGridsTo2xList(puzzle.numberedCells)
+    # for i in range(1, 10):
+    #     print(newPuzzle[i])
+    # print(ps.checkWholePuzzle(newPuzzle))
